@@ -4,8 +4,6 @@
  * Version: 0.1.0
  */
 
-//require_once( 'blocks/gutenfactory.php' );
-
 $gutenfactory_blocks = [
   'namespace/name' => [
     'title' => __( 'My Block', 'gutenfactory' ),
@@ -31,15 +29,20 @@ $gutenfactory_blocks = [
         'control' => 'RichText',
         'display' => 'div',
       ],
-      'background' => [
-        'control' => 'MediaLibrary',
-        'display' => 'css',
-      ]
+      // 'background' => [
+      //   'control' => 'MediaLibrary',
+      //   'display' => 'css',
+      // ]
     ],
+    'callback' => 'my_awesome_block',
     'style' =>   plugins_url( 'my-block.css', __FILE__ ),
     'editor_style' =>   plugins_url( 'my-block-editor.css', __FILE__ ),
   ],
 ];
+function my_awesome_block( $fields ) {
+  $output = '<div style="background-image:url('.$fields['background'].');">'.$fields['content'].'</div>';
+  return $output;
+}
 
 function gutenfactory_init() {
   global $gutenfactory_blocks;
