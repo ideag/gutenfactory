@@ -5,80 +5,68 @@
  */
 
 $gutenfactory_blocks = [
-  'namespace/name2' => [
-    'title' => __( 'My Block2', 'gutenfactory' ),
-    'category' => 'common',
-    'fields'  => [
-      'heading' => [
-        'control' => 'RichText',
-        'position'=> 'inline',
-        'data_type' => 'string',
-        'props' => [
-          'format' => 'string',
-          'tagName' => 'h2',
-          'className' => 'heading',
-          'placeholder' => 'coool heading',
-        ],
-      ],
-      'content' => [
-        'control' => 'RichText',
-        'position'=> 'inline',
-        'data_type' => 'string',
-        'props' => [
-          'format' => 'string',
-          'tagName' => 'div',
-          'className' => 'content',
-          'placehoder' => 'cool text',
-        ],
-      ],
-      'background' => [
-        'control' => 'MediaUpload',
-        'position'=> 'inspector',
-        'label'  => __( 'Upload background image.', 'gutenfactory' ),
-        'data_type'=>'integer',
-      ],
-      // 'description' => [
-      //   'control'   => 'TextareaControl',
-      //   'position'  => 'inspector',
-      //   'label'     => __( 'My Block Description', 'gutenfactory' ),
-      //   'help'      => __( 'Write something here, too.', 'gutenfactory' ),
-      // ],
-      // 'class' => [
-      //   'control'   => 'TextControl',
-      //   'position'  => 'inspector',
-      //   'default'   => 'coool',
-      //   'label'     => __( 'My Block Class', 'gutenfactory' ),
-      //   'help'      => __( 'Write something here', 'gutenfactory' ),
-      // ],
-      // 'range' => [
-      //   'control'   => 'RangeControl',
-      //   'position'  => 'inspector',
-      //   'label'     => __( 'My Range', 'gutenfactory' ),
-      //   'default'   => 50,
-      //   'props'     => [
-      //     'min'   => 10,
-      //     'max'   => 100,
-      //     'step'  => 10,
-      //   ],
-      // ]
-    ],
-    'callback' => 'my_awesome_block',
-    'style' =>   plugins_url( 'my-block.css', __FILE__ ),
-    'editor_style' =>   plugins_url( 'my-block-editor.css', __FILE__ ),
-  ],
+  // 'namespace/name2' => [
+  //   'title' => __( 'My Block2', 'gutenfactory' ),
+  //   'category' => 'common',
+  //   'fields'  => [
+  //     'heading' => [
+  //       'control' => 'RichText',
+  //       'position'=> 'inline',
+  //       'data_type' => 'string',
+  //       'props' => [
+  //         'format' => 'string',
+  //         'tagName' => 'h2',
+  //         'className' => 'heading',
+  //         'placeholder' => 'coool heading',
+  //       ],
+  //     ],
+  //     'content' => [
+  //       'control' => 'RichText',
+  //       'position'=> 'inline',
+  //       'data_type' => 'string',
+  //       'props' => [
+  //         'format' => 'string',
+  //         'tagName' => 'div',
+  //         'className' => 'content',
+  //         'placehoder' => 'cool text',
+  //       ],
+  //     ],
+  //     'background' => [
+  //       'control' => 'MediaUpload',
+  //       'position'=> 'inspector',
+  //       'label'  => __( 'Upload background image.', 'gutenfactory' ),
+  //       'data_type'=>'integer',
+  //     ],
+  //     // 'description' => [
+  //     //   'control'   => 'TextareaControl',
+  //     //   'position'  => 'inspector',
+  //     //   'label'     => __( 'My Block Description', 'gutenfactory' ),
+  //     //   'help'      => __( 'Write something here, too.', 'gutenfactory' ),
+  //     // ],
+  //     // 'class' => [
+  //     //   'control'   => 'TextControl',
+  //     //   'position'  => 'inspector',
+  //     //   'default'   => 'coool',
+  //     //   'label'     => __( 'My Block Class', 'gutenfactory' ),
+  //     //   'help'      => __( 'Write something here', 'gutenfactory' ),
+  //     // ],
+  //     // 'range' => [
+  //     //   'control'   => 'RangeControl',
+  //     //   'position'  => 'inspector',
+  //     //   'label'     => __( 'My Range', 'gutenfactory' ),
+  //     //   'default'   => 50,
+  //     //   'props'     => [
+  //     //     'min'   => 10,
+  //     //     'max'   => 100,
+  //     //     'step'  => 10,
+  //     //   ],
+  //     // ]
+  //   ],
+  //   'callback' => 'my_awesome_block',
+  //   'style' =>   plugins_url( 'my-block.css', __FILE__ ),
+  //   'editor_style' =>   plugins_url( 'my-block-editor.css', __FILE__ ),
+  // ],
 ];
-function my_awesome_block( $fields, $content ) {
-  $output = '';
-  // foreach ( $fields['content'] as $cont ) {
-  $image = wp_get_attachment_image_src( $fields['background'], 'full' );
-  $image = $image[0];
-  $output .= '<div class="my-block bg" style="background-image:url(\''.$image.'\');">';
-  $output .= '<h2 class="heading">' . $fields['heading'] . '</h2>';
-  $output .= '<div class="content">' . $fields['content'] . '</div>';
-  $output .= '</div>';
-  // $output .= var_export( $fields, true );
-  return $output;
-}
 function gutenfactory_prefill( $attributes, $name ) {
   if ( ! isset( $attributes['data_type'] ) ) {
     $attributes['data_type'] = 'string';
