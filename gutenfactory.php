@@ -8,7 +8,6 @@ $gutenfactory_blocks = [
   'namespace/name2' => [
     'title' => __( 'My Block2', 'gutenfactory' ),
     'category' => 'common',
-    // 'type' => //static|dynamic
     'fields'  => [
       'heading' => [
         'control' => 'RichText',
@@ -32,44 +31,36 @@ $gutenfactory_blocks = [
           'placehoder' => 'cool text',
         ],
       ],
-      // 'content2' => [
-      //   'control' => 'MediaUpload',
-      //   'position'=> 'inline',
-      // ],
-      // 'some-more' => [
-      //   'control' => 'TextareaControl',
-      //   'position'=> 'inline',
-      // ],
-      'description' => [
-        'control'   => 'TextareaControl',
-        'position'  => 'inline',
-        'label'     => __( 'My Block Description', 'gutenfactory' ),
-        'help'      => __( 'Write something here, too.', 'gutenfactory' ),
+      'background' => [
+        'control' => 'MediaUpload',
+        'position'=> 'inspector',
+        'label'  => __( 'Upload background image.', 'gutenfactory' ),
+        'data_type'=>'integer',
       ],
-      'class' => [
-        'control'   => 'TextControl',
-        'position'  => 'inspector',
-        'default'   => 'coool',
-        'label'     => __( 'My Block Class', 'gutenfactory' ),
-        'help'      => __( 'Write something here', 'gutenfactory' ),
-        // 'props'     => [
-        //   'type'  => 'number',
-        //   'min'   => 10,
-        //   'step'  => 10,
-        // ],
-      ],
-      'range' => [
-        'control'   => 'RangeControl',
-        'position'  => 'inline',
-        'label'     => __( 'My Range', 'gutenfactory' ),
-        'default'   => 50,
-        'props'     => [
-          'min'   => 10,
-          'max'   => 100,
-          'step'  => 10,
-        ],
-      ]
-
+      // 'description' => [
+      //   'control'   => 'TextareaControl',
+      //   'position'  => 'inspector',
+      //   'label'     => __( 'My Block Description', 'gutenfactory' ),
+      //   'help'      => __( 'Write something here, too.', 'gutenfactory' ),
+      // ],
+      // 'class' => [
+      //   'control'   => 'TextControl',
+      //   'position'  => 'inspector',
+      //   'default'   => 'coool',
+      //   'label'     => __( 'My Block Class', 'gutenfactory' ),
+      //   'help'      => __( 'Write something here', 'gutenfactory' ),
+      // ],
+      // 'range' => [
+      //   'control'   => 'RangeControl',
+      //   'position'  => 'inspector',
+      //   'label'     => __( 'My Range', 'gutenfactory' ),
+      //   'default'   => 50,
+      //   'props'     => [
+      //     'min'   => 10,
+      //     'max'   => 100,
+      //     'step'  => 10,
+      //   ],
+      // ]
     ],
     'callback' => 'my_awesome_block',
     'style' =>   plugins_url( 'my-block.css', __FILE__ ),
@@ -79,8 +70,12 @@ $gutenfactory_blocks = [
 function my_awesome_block( $fields, $content ) {
   $output = '';
   // foreach ( $fields['content'] as $cont ) {
+  $image = wp_get_attachment_image_src( $fields['background'], 'full' );
+  $image = $image[0];
+  $output .= '<div class="my-block bg" style="background-image:url(\''.$image.'\');">';
   $output .= '<h2 class="heading">' . $fields['heading'] . '</h2>';
   $output .= '<div class="content">' . $fields['content'] . '</div>';
+  $output .= '</div>';
   // $output .= var_export( $fields, true );
   return $output;
 }
@@ -128,6 +123,7 @@ function gutenfactory_run() {
       $attributes['fields'][ $attr_name ] = gutenfactory_prefill( $attr, $attr_name );
     }
     $slug = str_replace( '/', '-', $name );
+    $attributes['slug'] = $slug;
     wp_register_style(
       $slug . '-editor',
       $attributes['editor_style'],

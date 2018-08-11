@@ -16,31 +16,32 @@
 						'name'  : field_name,
 						'default' : field.default,
 						'props' 	: field.props,
-
-						'props' : {
-							'format' : 'string',
-							'tagName'	: 'div',
-							'className' : 'content',
-						},
 					};
 					var attribute = {
-						type: 'string',
+						type: field.data_type,
 					};
 				break;
-				// case 'MediaUpload' :
-				// 	var input = {
-				// 		'type'	: wp.editor.MediaUpload,
-				// 		'name'  : field_name,
-				// 		'props' : {
-				// 			'render' : function( open ) { return el( wp.components.Button, { onClick: open.open }, 'Upload' ) },
-				// 		// 	'accept' : 'image/*',
-				// 		},
-				// 		// 'content' : 'Upload',
-				// 	};
-				// 	var attribute = {
-				// 	 type: 'object',
-				// 	};
-				// break;
+				case 'MediaUpload' :
+					field.props.type='image';
+				  field.props.render = function( obj ) {
+						return el(
+							wp.components.Button,
+							{
+								onClick: obj.open,
+								className: 'components-button button button-large button-two',
+							},
+							'Select Image'
+						)
+					};
+					var input = {
+						'type'	: wp.editor.MediaUpload,
+						'name'  : field_name,
+						'props' : field.props,
+					};
+					var attribute = {
+					 type: field.data_type,
+					};
+				break;
 				default :
 					var input = {
 						'type'		: wp.components[ field.control ],
@@ -63,7 +64,6 @@
 			}
 			block_attributes[field_name] = attribute;
 		} );
-		console.log( block_attributes );
 		registerBlockType( block_name, {
 			title: block.title,
 			category: block.category,
@@ -77,7 +77,11 @@
 						n[input.name] = new_value;
 						props.setAttributes( n );
 					};
-					console.log( input );
+					input.props.onSelect = function( new_value ) {
+						var n = {};
+						n[input.name] = new_value.id;
+						props.setAttributes( n );
+					}
 					return el(
 						input.type,
 						input.props,
@@ -90,7 +94,7 @@
 				} );
 				block_ret = el(
 					'div',
-					{ 'className' : 'gutenfactory-settings' },
+					{ 'className' : 'gutenfactory-settings ' + 'gutenfactory_' + block.slug },
 					block_ret
 				);
 				var inspector = [];
@@ -121,11 +125,15 @@
 						'attributes' 	: props.attributes,
 					}
 				);
-				return [block_ret, inspector_ret ];
+				if ( props.isSelected ) {
+					return [ block_ret, inspector_ret ];
+				} else {
+					return [ render_ret, inspector_ret ];
+				}
 			},
 
 			save: function( props ) {
-				return false;
+				return null;
 			}
 		} );
 	});
