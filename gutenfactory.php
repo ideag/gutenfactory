@@ -1,10 +1,104 @@
 <?php
 /**
  * Plugin Name: GutenFactory
+ * DescriptionL PHP based interface to generate Gutenberg blocks.
  * Version: 0.1.0
+ * Author: Arūnas Liuiza & Stanislav Khromov
+ * Author URI: https://arunas.co
  */
 
-$gutenfactory_blocks = [
+add_action( 'plugins_loaded', 'GutenFactory', 100 );
+
+function GutenFactory() {
+	if ( false === GutenFactoryClass::$instance ) {
+		GutenFactoryClass::$instance = new GutenFactoryClass();
+	}
+	return GutenFactoryClass::$instance;
+}
+
+class GutenFactoryClass() {
+  public $instance = false;
+  public $blocks = [];
+  public function __construct() {
+    $this->blocks = apply_filters( 'gutenfactory_blocks', $this->blocks );
+    add_action( 'init', array( $this, 'run' ) );
+    add_filter( 'gutenfactory_fields', array( $this, 'prefill' ), 10, 2 );
+  }
+  public function run() {
+    $version = current_time( 'timestamp' );
+    wp_register_script(
+      'gutenfactory-editor',
+      plugins_url( 'gutenfactory-editor.js', __FILE__ ),
+      array(
+        'wp-blocks',
+        'wp-i18n',
+        'wp-element',
+      ),
+      $version
+    );
+    foreach ( $this->blocks as $name => $attributes ) {
+      foreach ( $attributes['fields'] as $attr_name => $attr ) {
+        $attr = apply_filters( 'gutenfactory_fields', $attr, $attr_name );
+        $attributes['fields'][ $attr_name ] = $attr;
+      }
+      $slug = str_replace( '/', '-', $name );
+      $attributes['slug'] = $slug;
+      wp_register_style(
+        $slug . '-editor',
+        $attributes['editor_style'],
+        array(
+          'wp-blocks',
+        ),
+        $version
+      );
+      wp_register_style(
+        $slug,
+        $attributes['style'],
+        array(
+          'wp-blocks',
+        ),
+        $version
+      );
+      register_block_type( $name, array(
+        'editor_script'   => 'gutenfactory-editor',
+        'editor_style'    => $slug . '-editor',
+        'style'           => $slug,
+        'attributes'      => $this->attributes( $attributes['fields'] ),
+        'render_callback' => $attributes['callback'],
+      ) );
+      $gutenfactory_blocks[ $name ] = $attributes;
+    }
+    wp_localize_script( 'gutenfactory-editor', 'gutenfactory_blocks', $gutenfactory_blocks );
+  }
+  public function attributes( $attributes ) {
+    $result = [];
+    foreach ( $attributes as $key => $attribute ) {
+      $result[ $key ] = [ 'type' => $attribute['data_type'] ];
+    }
+    return $result;
+  }
+  public function prefill( $attributes, $name ) {
+    if ( ! isset( $attributes['data_type'] ) ) {
+      $attributes['data_type'] = 'string';
+    }
+    if ( ! isset( $attributes['content'] ) ) {
+      $attributes['content'] = '';
+    }
+    if ( ! isset( $attributes['label'] ) ) {
+      $attributes['label'] = '';
+    }
+    if ( ! isset( $attributes['props'] ) ) {
+      $attributes['props'] = [];
+    }
+    $attributes['props']['label'] = $attributes['label'];
+    if ( isset( $attributes['help'] ) ) {
+      $attributes['props']['help'] = $attributes['help'];
+    }
+    return $attributes;
+  }
+}
+
+// $gutenfactory_blocks = [
   // 'namespace/name2' => [
   //   'title' => __( 'My Block2', 'gutenfactory' ),
   //   'category' => 'common',
@@ -66,84 +160,84 @@ $gutenfactory_blocks = [
   //   'style' =>   plugins_url( 'my-block.css', __FILE__ ),
   //   'editor_style' =>   plugins_url( 'my-block-editor.css', __FILE__ ),
   // ],
-];
-function gutenfactory_prefill( $attributes, $name ) {
-  if ( ! isset( $attributes['data_type'] ) ) {
-    $attributes['data_type'] = 'string';
-  }
-  if ( ! isset( $attributes['content'] ) ) {
-    $attributes['content'] = '';
-  }
-  if ( ! isset( $attributes['label'] ) ) {
-    $attributes['label'] = '';
-  }
-  if ( ! isset( $attributes['props'] ) ) {
-    $attributes['props'] = [];
-  }
-  $attributes['props']['label'] = $attributes['label'];
-  if ( isset( $attributes['help'] ) ) {
-    $attributes['props']['help'] = $attributes['help'];
-  }
-  return $attributes;
-}
+// ];
+// function gutenfactory_prefill( $attributes, $name ) {
+//   if ( ! isset( $attributes['data_type'] ) ) {
+//     $attributes['data_type'] = 'string';
+//   }
+//   if ( ! isset( $attributes['content'] ) ) {
+//     $attributes['content'] = '';
+//   }
+//   if ( ! isset( $attributes['label'] ) ) {
+//     $attributes['label'] = '';
+//   }
+//   if ( ! isset( $attributes['props'] ) ) {
+//     $attributes['props'] = [];
+//   }
+//   $attributes['props']['label'] = $attributes['label'];
+//   if ( isset( $attributes['help'] ) ) {
+//     $attributes['props']['help'] = $attributes['help'];
+//   }
+//   return $attributes;
+// }
 
-function gutenfactory_init() {
-  global $gutenfactory_blocks;
-  $gutenfactory_blocks = apply_filters( 'gutenfactory_blocks', $gutenfactory_blocks );
-}
-add_action( 'plugins_loaded', 'gutenfactory_init', 100 );
+// function gutenfactory_init() {
+//   global $gutenfactory_blocks;
+//   $gutenfactory_blocks = apply_filters( 'gutenfactory_blocks', $gutenfactory_blocks );
+// }
+// add_action( 'plugins_loaded', 'gutenfactory_init', 100 );
 
-function gutenfactory_run() {
-  global $gutenfactory_blocks;
-  $version = current_time( 'timestamp' );
-  wp_register_script(
-    'gutenfactory-editor',
-    plugins_url( 'gutenfactory-editor.js', __FILE__ ),
-    array(
-      'wp-blocks',
-      'wp-i18n',
-      'wp-element',
-    ),
-    $version
-  );
-  foreach ( $gutenfactory_blocks as $name => $attributes ) {
-    foreach ( $attributes['fields'] as $attr_name => $attr ) {
-      $attributes['fields'][ $attr_name ] = gutenfactory_prefill( $attr, $attr_name );
-    }
-    $slug = str_replace( '/', '-', $name );
-    $attributes['slug'] = $slug;
-    wp_register_style(
-      $slug . '-editor',
-      $attributes['editor_style'],
-      array(
-        'wp-blocks',
-      ),
-      $version
-    );
-    wp_register_style(
-      $slug,
-      $attributes['style'],
-      array(
-        'wp-blocks',
-      ),
-      $version
-    );
-    register_block_type( $name, array(
-      'editor_script' => 'gutenfactory-editor',
-      'editor_style'  => $slug . '-editor',
-      'style'         => $slug,
-      'attributes'      => gutenfactory_attributes( $attributes['fields'] ),
-      'render_callback' => $attributes['callback'],
-    ) );
-    $gutenfactory_blocks[ $name ] = $attributes;
-  }
-  wp_localize_script( 'gutenfactory-editor', 'gutenfactory_blocks', $gutenfactory_blocks );
-}
-function gutenfactory_attributes( $attributes ) {
-  $result = [];
-  foreach ( $attributes as $key => $attribute ) {
-    $result[ $key ] = [ 'type' => $attribute['data_type'] ];
-  }
-  return $result;
-}
-add_action( 'init', 'gutenfactory_run' );
+// function gutenfactory_run() {
+//   global $gutenfactory_blocks;
+//   $version = current_time( 'timestamp' );
+//   wp_register_script(
+//     'gutenfactory-editor',
+//     plugins_url( 'gutenfactory-editor.js', __FILE__ ),
+//     array(
+//       'wp-blocks',
+//       'wp-i18n',
+//       'wp-element',
+//     ),
+//     $version
+//   );
+//   foreach ( $gutenfactory_blocks as $name => $attributes ) {
+//     foreach ( $attributes['fields'] as $attr_name => $attr ) {
+//       $attributes['fields'][ $attr_name ] = gutenfactory_prefill( $attr, $attr_name );
+//     }
+//     $slug = str_replace( '/', '-', $name );
+//     $attributes['slug'] = $slug;
+//     wp_register_style(
+//       $slug . '-editor',
+//       $attributes['editor_style'],
+//       array(
+//         'wp-blocks',
+//       ),
+//       $version
+//     );
+//     wp_register_style(
+//       $slug,
+//       $attributes['style'],
+//       array(
+//         'wp-blocks',
+//       ),
+//       $version
+//     );
+//     register_block_type( $name, array(
+//       'editor_script' => 'gutenfactory-editor',
+//       'editor_style'  => $slug . '-editor',
+//       'style'         => $slug,
+//       'attributes'      => gutenfactory_attributes( $attributes['fields'] ),
+//       'render_callback' => $attributes['callback'],
+//     ) );
+//     $gutenfactory_blocks[ $name ] = $attributes;
+//   }
+//   wp_localize_script( 'gutenfactory-editor', 'gutenfactory_blocks', $gutenfactory_blocks );
+// }
+// function gutenfactory_attributes( $attributes ) {
+//   $result = [];
+//   foreach ( $attributes as $key => $attribute ) {
+//     $result[ $key ] = [ 'type' => $attribute['data_type'] ];
+//   }
+//   return $result;
+// }
+// add_action( 'init', 'gutenfactory_run' );
