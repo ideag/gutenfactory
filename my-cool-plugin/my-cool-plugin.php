@@ -50,8 +50,16 @@ function my_cool_plugin_block( $blocks ) {
 }
 
 function my_cool_plugin_callback( $fields, $content ) {
-  $image = wp_get_attachment_image_src( $fields['background'], 'full' );
-  $image = $image[0];
+
+  $image = false;
+  if(isset($fields['background'])) {
+    $image = wp_get_attachment_image_src( $fields['background'], 'full' );
+
+    if(isset($image[0])) {
+      $image = $image[0];
+    }
+  }
+
   $output  = '';
   $output .= '<div class="my-block bg" style="background-image:url(\'' . $image . '\');">';
   $output .= '<h2 class="heading">' . $fields['heading'] . '</h2>';
