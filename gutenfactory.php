@@ -16,8 +16,8 @@ function GutenFactory() {
 	return GutenFactoryClass::$instance;
 }
 
-class GutenFactoryClass() {
-  public $instance = false;
+class GutenFactoryClass {
+  static public $instance = false;
   public $blocks = [];
   public function __construct() {
     $this->blocks = apply_filters( 'gutenfactory_blocks', $this->blocks );
