@@ -1,16 +1,15 @@
-=== GutenFactory§ ===
-Contributors: ideag, khromov
-Donate link: http://arunas.co/#coffee
-Tags: Gutenberg, block, blocks
-Requires at least: 4.9.0
-Tested up to: 4.9.0
-Stable tag: 0.1.0
-License: GPLv2
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+# GutenFactory
 
-Create Gutenberg blocks via PHP only (and, maybe, some CSS).
+- Contributors: ideag, khromov
+- Donate link: http://arunas.co/#coffee
+- Tags: Gutenberg, block, blocks
+- Requires at least: 4.9.0
+- Tested up to: 4.9.0
+- Stable tag: 0.1.0
+- License: GPLv2
+- License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-== Description ==
+## Description
 
 Since Gutenberg itself is JavaScript/React based, you also need to know JavaScript/React to create custom blocks. Or, you needed to know. GutenFactory, as the name suggests, aims to bring techniques of mass production into the new world of Gutenberg,
 
@@ -31,7 +30,6 @@ function my_awesome_block( $blocks ) {
   ];
 }
 ```
-
 GutenFactory will take this information, some standard Gutenberg components like TextControl and RichText and some custom JS to build a custom Gutenberg block for you, automatically.
 
 In the plugin directory, you can find another plugin, my-cool-plugin, which illustrates how to create a simple Hero Image block using GutenFactory.
@@ -40,24 +38,23 @@ GutenFactory has been started on the Contributors day of WordCamp Norrköping 20
 
 Note: This is still a very early work in progress, a lot features are still not implemented or can change in development. Do not use it on any kind of production environment.
 
-== Installation ==
+## Installation
 
 1. Upload `gutenfactory` directory to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Use the `gutenfactory_blocks` filter to declare new blocks in your plugins/themes
 
-== Frequently Asked Questions ==
+## Frequently Asked Questions
 
+## Changelog
 
-== Changelog ==
-
-= 0.1 =
+- 0.1 -
 Initial release
 
-== Upgrade Notice ==
+## Upgrade Notice
 
 No upgrade notices
 
-== Screenshots ==
+## Screenshots
 
 No screenshots yet
